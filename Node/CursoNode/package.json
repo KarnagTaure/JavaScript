@@ -1,0 +1,30 @@
+{
+  "name": "cursonode",
+  "version": "1.0.0",
+  "description": "Mi primer proyecto de Node.js",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "css": "postcss public/css/tailwind.css -o public/css/app.css"
+  },
+  "keywords": [
+    "MVC",
+    "pug",
+    "Tailwind"
+  ],
+  "author": "Alberto LM",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.3",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.18",
+    "nodemon": "^3.1.0",
+    "postcss": "^8.4.35",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.1"
+  }
+}
