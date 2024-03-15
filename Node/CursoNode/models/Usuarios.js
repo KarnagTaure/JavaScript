@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from "sequelize";
-import bcypt from "bcrypt";
+import bcrypt from "bcrypt";
 import db from "../Config/db.js";
 
 const Usuario = db.define(
@@ -23,10 +23,16 @@ const Usuario = db.define(
   {
     hooks: {
       beforeCreate: async function (usuario) {
-        const salt = await bcypt.genSalt(10);
-        usuario.password = await bcypt.hash(usuario.password, salt);
+        const salt = await bcrypt.genSalt(10);
+        usuario.password = await bcrypt.hash(usuario.password, salt);
       },
     },
   }
 );
+
+//Metodos personalizados
+Usuario.prototype.verificarPassword = function(password) {
+  return bcrypt.compareSync(password,this.password);
+}
+
 export default Usuario;
