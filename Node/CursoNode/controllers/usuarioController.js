@@ -1,7 +1,8 @@
 import { check, validationResult } from "express-validator";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import Usuarios from "../models/Usuarios.js";
-import { generarId } from "../helpers/tokens.js";
+import { generarId, generarJWT } from "../helpers/tokens.js";
 import { emailOlvidePassword, emailRegistro } from "../helpers/emails.js";
 import { assign } from "nodemailer/lib/shared/index.js";
 
@@ -53,10 +54,9 @@ const autenticar = async (req, res) => {
       csrfToken: req.csrfToken(),
     });
   }
-  
 
   //Revisar el password
-  if(!usuario.verificarPassword(password)){
+  if (!usuario.verificarPassword(password)) {
     return res.render("auth/login", {
       pagina: "Iniciar sesión",
       errores: [{ msg: "La contraseña es incorrecta" }],
@@ -65,7 +65,19 @@ const autenticar = async (req, res) => {
   }
 
   //Autenticar Usuario
-  
+  const token = generarJWT({usuario:usuario.id, nombre: usuario.nombre});
+
+  console.log(token);
+
+  //Almacenamos en un Cookie
+      //esto crea un cookie con el nombre _token
+  return res.cookie('_token',token, {
+    //Seguridad para que no se lea el contenido del token 
+    httpOnly: true,
+    secure: true,
+    //sameSite:true,
+    
+  }).redirect('/mis-propiedades')
 };
 
 //Abre pagina  de registro de usuario

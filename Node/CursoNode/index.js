@@ -1,7 +1,8 @@
 import express from "express";
 import csrf from 'csurf'
 import cookieParser from "cookie-parser";
-import usuarioRoutes from "./Rotes/usuarioRoutes.js";
+import usuarioRoutes from "./Routes/usuarioRoutes.js";
+import propiedadesRoutes from "./Routes/propiedadesRoute.js";
 import db from "./Config/db.js";
 
 // Crear la app
@@ -10,7 +11,7 @@ const app = express();
 //Habilitar  lectura de datos de formularios
 app.use(express.urlencoded({ extended: true }));
 
-//Habilitamos Cookie parse
+//Habilitamos Cookie parse para la creacion de Cookies
 app.use(cookieParser())
 
 //Habilitamos el CSRF
@@ -34,6 +35,8 @@ app.use(express.static("public"));
 
 //Routing / Rutas
 app.use("/auth", usuarioRoutes);
+app.use("/", propiedadesRoutes);
+
 
 //Definir un puerto u arrancar el proyeto
 const port = process.env.PORT || 3000;
