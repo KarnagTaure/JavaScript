@@ -37,12 +37,14 @@
         //LLenar los campos
 
         //muestra debajo del mapa el nombre de la calle
-       document.querySelector(".calle").textContent = resultado?.address?.Address ?? '';
+        document.querySelector(".calle").textContent =
+          resultado?.address?.Address ?? "";
 
-       //saca los datos para guardar los en la base de datos
-       document.querySelector("#calle").value = resultado?.address?.Address ?? '';
-       document.querySelector("#lat").value = resultado?.address?.lat ?? '';
-       document.querySelector("#lng").value = resultado?.address?.lng ?? '';
+        //saca los datos para guardar los en la base de datos
+        document.querySelector("#calle").value =
+          resultado?.address?.Address ?? "";
+        document.querySelector("#lat").value = resultado?.address?.lat ?? "";
+        document.querySelector("#lng").value = resultado?.address?.lng ?? "";
       });
   });
 })();
