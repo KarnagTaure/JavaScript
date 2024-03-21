@@ -18,6 +18,9 @@ block contenido
                     div
                         label.block.text-sm.uppercase.text-gray-500.mb-2.font-bold(for="titulo") Titulo de anuncio 
                         input#titulo.w-full.px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Titulo" type="text" name="titulo")
+                    div
+                        label.block.text-sm.uppercase.text-gray-500.mb-2.font-bold(for="descripcion") Descripción
+                        textarea#descripcion.w-full.px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Descripcion" type="text" name="descripcion")
 
 
                     div(class="md:flex md:gap-4 space-y-5 md:space-y-0")   
@@ -62,7 +65,7 @@ block contenido
                     div#mapa.h-96
 
                     div 
-                        p.calle 
+                        p.calle
                     
                     input(type="hidden" name="calle" id="calle")
                     input(type="hidden" name="lat" id="lat")
