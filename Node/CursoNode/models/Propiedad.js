@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import db from "../Config/db.js";
 
 //crea una Tabla en la base de datos
-const Propiedades = db.define("propiedades", {
+const Propiedad = db.define("propiedades", {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -51,4 +51,4 @@ const Propiedades = db.define("propiedades", {
     defaultValue: false,
   },
 });
-export default Propiedades;
+export default Propiedad;
