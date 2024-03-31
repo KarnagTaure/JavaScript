@@ -1,39 +1,42 @@
 import express from "express";
-import path from "path";
-import csrf from "csurf";
+import path from "path"
+import csrf from 'csurf'
 import cookieParser from "cookie-parser";
 import usuarioRoutes from "./Routes/usuarioRoutes.js";
 import propiedadesRoutes from "./Routes/propiedadesRoute.js";
 import db from "./Config/db.js";
 
+
 // Crear la app
 const app = express();
+
 
 //Habilitar  lectura de datos de formularios
 app.use(express.urlencoded({ extended: true }));
 
 //Habilitamos Cookie parse para la creacion de Cookies
-app.use(cookieParser());
+app.use(cookieParser())
 
 //Habilitamos el CSRF
-app.use(csrf({ cookie: true }));
+app.use(csrf({cookie: true}))
 
 //Conexion a la base de datos
-try {
-  await db.authenticate();
-  db.sync(); //sincroniza con la base de datos
-  console.log("Conexion correcta a la base de datos");
-} catch (error) {
-  console.log(error);
-}
+const conectarBaseDatos = async () => {
+  try {
+    await db.authenticate();
+    await db.sync(); //sincroniza con la base de datos
+    console.log("Conexion correcta a la base de datos");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+conectarBaseDatos();
 
 //Habilitar pug
 app.set("view engine", "pug");
 app.set("views", "./views");
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/auth", "login.pug"));
-});
 
 //Carpeta publica
 app.use(express.static("public"));
@@ -42,8 +45,9 @@ app.use(express.static("public"));
 app.use("/auth", usuarioRoutes);
 app.use("/", propiedadesRoutes);
 
+
 //Definir un puerto u arrancar el proyeto
-const port = process.env.PORT || 3000;
+const port = process.env.PORT ;
 
 app.listen(port, () => {
   console.log(`ELServidor esta funcionando en el puerto ${port}`);
