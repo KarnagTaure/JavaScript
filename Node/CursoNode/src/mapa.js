@@ -1,6 +1,6 @@
 (function () {
-  const lat = 40.4194621;
-  const lng = -3.7016401;
+  const lat = document.querySelector("#lat").value || 40.4194621;
+  const lng = document.querySelector("#lng").value || -3.7016401;
   const mapa = L.map("mapa").setView([lat, lng], 16);
   let marker;
 
@@ -31,20 +31,18 @@
       .reverse()
       .latlng(posicion, 13)
       .run(function (error, resultado) {
-        //console.log(resultado);
+       console.log(resultado);
         marker.bindPopup(resultado.address.LongLabel);
 
         //LLenar los campos
 
         //muestra debajo del mapa el nombre de la calle
-        document.querySelector(".calle").textContent =
-          resultado?.address?.Address ?? "";
+        document.querySelector(".calle").textContent = resultado?.address?.Address ?? "";
 
         //saca los datos para guardar los en la base de datos
-        document.querySelector("#calle").value =
-          resultado?.address?.Address ?? "";
-        document.querySelector("#lat").value = resultado?.address?.lat ?? "";
-        document.querySelector("#lng").value = resultado?.address?.lng ?? "";
+        document.querySelector("#calle").value =resultado?.address?.Address ?? "";
+        document.querySelector("#lat").value = resultado?.latlng?.lat ?? "";
+        document.querySelector("#lng").value = resultado?.latlng?.lng ?? "";
       });
   });
 })();

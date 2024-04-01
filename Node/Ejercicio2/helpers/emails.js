@@ -25,7 +25,7 @@ const emailRegistro = async (datos) => {
         <p>Tu cuenta ya esta lista, solo deves acceder en el siguiente en lace para confirmar el email: <a href="${
           process.env.BACKEND_URL
         }:${
-      process.env.PORT ?? 3000
+      process.env.PORT || 3000
     }/auth/confirmar/${token}">Confirmar Email</a></p>
 
         <p>Si tu no has creado esta cuenta, puedes ignorar el mensaje</p>       
@@ -57,7 +57,7 @@ const emailOlvidePassword = async (datos) => {
       <p>Para porder cambiar la contraseña debe acceder al siguiente enlace: <a href="${
         process.env.BACKEND_URL
       }:${
-      process.env.PORT ?? 3000
+      process.env.PORT || 3000
     }/auth/olvide-password/${token}">Restablecer Contraseña</a></p>
 
       <p>Si usted no has solicitado restablecer el password, puedes ignorar el mensaje</p>       

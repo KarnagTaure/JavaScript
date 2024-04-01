@@ -31,9 +31,6 @@ try {
 app.set("view engine", "pug");
 app.set("views", "./views");
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/auth", "login.pug"));
-});
 
 //Carpeta publica
 app.use(express.static("public"));

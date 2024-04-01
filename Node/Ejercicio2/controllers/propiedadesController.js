@@ -6,6 +6,7 @@ const admin = (req, res) => {
   res.render("propiedades/admin", {
     pagina: "Mis propiedades",
     barra: true,
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -20,6 +21,7 @@ const crear = async (req, res) => {
   res.render("propiedades/crear", {
     pagina: "Crear Tarea",
     barra: true,
+    csrfToken: req.csrfToken(),
     categorias,
     precios,
   });
@@ -41,7 +43,8 @@ const guardar = async(res, req) => {
       barra: true,
       categorias,
       precios,
-      errores: resultado.array()
+      errores: resultado.array(),
+      csrfToken: req.csrfToken(),
     });
   }
 };
