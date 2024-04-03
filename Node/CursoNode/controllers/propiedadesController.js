@@ -1,11 +1,9 @@
 import { validationResult } from "express-validator";
-import Precio from "../models/Precio.js";
-import Categoria from "../models/Categoria.js";
+import { Precio, Categoria, Propiedad } from "../models/index.js";
 
 const admin = (req, res) => {
   res.render("propiedades/admin", {
     pagina: "Mis propiedades",
-    barra: true,
   });
 };
 
@@ -19,11 +17,10 @@ const crear = async (req, res) => {
 
   res.render("propiedades/crear", {
     pagina: "Crear Tarea",
-    barra: true,
     csrfToken: req.csrfToken(),
     categorias,
     precios,
-    datos: {}
+    datos: {},
   });
 };
 
@@ -40,21 +37,80 @@ const guardar = async (req, res) => {
 
     return res.render("propiedades/crear", {
       pagina: "Crear Tarea",
-      barra: true,
       csrfToken: req.csrfToken(),
       categorias,
       precios,
       errores: resultado.array(),
-      datos: req.body
+      datos: req.body,
     });
-
-
   }
 
-// Creamos un Registro
+  // Creamos un Registro
 
-console.log(req.body);
+  const {
+    titulo,
+    descripcion,
+    categoria: categoriaId,
+    precio: precioId,
+    habitaciones,
+    estacionamiento,
+    wc,
+    calle,
+    lat,
+    lng,
+  } = req.body;
 
+  const { id: usuarioId } = req.usuario;
+  try {
+    const propiedadGuardada = await Propiedad.create({
+      titulo,
+      descripcion,
+      categoriaId,
+      precioId,
+      usuarioId,
+      habitaciones,
+      estacionamiento,
+      wc,
+      calle,
+      lat,
+      lng,
+      imagen: "",
+    });
+
+    const { id } = propiedadGuardada;
+
+    res.redirect(`/propiedades/agregar-imagen/${id}`);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-export { admin, crear, guardar };
+const agregarImagen = async (req, res) => {
+
+  const {id}= req.params
+
+  // Validar propiedad
+  const propiedad = await Propiedad.findByPk(id)
+
+  if(!propiedad){
+    return res.redirect('/mis-propiedades')
+  }
+
+  // Validar que la propiedad no existe 
+  if(propiedad.publicado){
+    return res.redirect('/mis-propiedades')
+  }
+
+  // Validar que la propiedad pertenece a quien la visita
+  if(req.usuario.id.toString() !== propiedad.usuarioId.toString()){
+    return res.redirect('/mis-propiedades')
+  }
+
+
+  res.render("propiedades/agregar-imagen",{
+    pagina: "Agregar Imagen",
+    propiedad
+  });
+};
+
+export { admin, crear, guardar, agregarImagen };

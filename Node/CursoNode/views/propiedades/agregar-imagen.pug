@@ -1,0 +1,23 @@
+extends ../layout/admin
+
+block styles 
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css")
+
+block contenido
+    .py-10 
+        h1.text-4xl.my-10.font-extrabold.text-center Meiyo
+            span.font-normal Dojo
+        h2.text-center.text-3xl.text-red-600.font-extrabold= pagina 
+
+        div(class="bg-white shadow py-8 px-4 rounded mx-auto max-w-4xl my-10 md:px-10")
+            form(class="dropzone border-dashed borde-2 w-full min:h-96 h-auto rouded flex-col justify-center items-center" method= "POST" action=`/propiedades/agregar-imagen/${propiedad.id}`).space-y-8
+                input(type="hidden" name="_csrf" value= csrfToken)
+              
+              
+
+            Input(class="mt-5 w-full py-3 bg-red-600 hover:bg-red-700 rounded text-white font-bold uppercase cursor-pointer" type="submit" value="Publicar Propiedad")
+
+
+block scripts 
+    script(src="/js/agregarImagen.js") 
+    

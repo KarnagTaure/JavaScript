@@ -1,8 +1,9 @@
 import { exit } from "node:process";
 import categorias from "./categorias.js";
 import precios from "./precios.js";
+import usuarios from "./usuarios.js";
 import db from "../Config/db.js";
-import {Categoria, Precio} from '../models/index.js'
+import {Categoria, Precio, Usuario} from '../models/index.js'
 
 
 const importarDatos = async () => {
@@ -19,6 +20,8 @@ const importarDatos = async () => {
     await Promise.all([
       Categoria.bulkCreate(categorias),
       Precio.bulkCreate(precios),
+      Usuario.bulkCreate(usuarios)
+
     ]);
 
     // Esta forma hace que cada proceso no se ejecute hasta que el otro no ha terminado, biene bien para procesos que uno dependa de otro
