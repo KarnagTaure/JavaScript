@@ -7,3 +7,17 @@ block contenido
         h2.text-center.text-3xl.text-red-600.font-extrabold= pagina 
 
         a(href="/propiedades/crear" class="rounded py-2 px-10 bg-red-600 hover:bg-red-700 text-sm font-bold text-center text-white uppercase my-5 inline-block w-full md:w-auto") Publicar
+
+        //- pre= JSON.stringify(propiedades,undefined, 2)
+
+        if propiedades.length 
+            div(class="bg-white shadow rounded-lg")
+                ul(class="divide-y divide-gray-200")
+                    each propiedad in propiedades   
+                        li 
+                            div(class="p-6 w-full flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-8 gap-4")
+                                div(class="sm:w-1/4 md:w-1/6")
+                                    img
+        
+        else 
+            p.text-center No Hay Propiedades
