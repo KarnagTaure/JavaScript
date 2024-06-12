@@ -1,6 +1,7 @@
 import { unlink } from "node:fs/promises";
 import { validationResult } from "express-validator";
 import { Precio, Categoria, Propiedad } from "../models/index.js";
+import { Router } from "express";
 
 const admin = async (req, res) => {
   const { id } = req.usuario;
@@ -281,6 +282,15 @@ const eliminar = async (req, res) => {
   res.redirect("/mis-propiedades");
 };
 
+//Muestra una propiedad
+
+const mostrarPropiedad=async(req, res)=>{
+  res.render('propiedades/mostrar',{
+    
+  })
+
+}
+
 export {
   admin,
   crear,
@@ -290,4 +300,5 @@ export {
   editar,
   guardarCambios,
   eliminar,
+  mostrarPropiedad
 };
