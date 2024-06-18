@@ -4,22 +4,57 @@ import { Precio, Categoria, Propiedad } from "../models/index.js";
 import { Router } from "express";
 
 const admin = async (req, res) => {
-  const { id } = req.usuario;
-  const propiedades = await Propiedad.findAll({
-    where: {
-      usuarioId: id,
-    },
-    include: [
-      { model: Categoria, as: "categoria" },
-      { model: Precio, as: "precio" },
-    ],
-  });
+  //leer QueryString
 
-  res.render("propiedades/admin", {
-    pagina: "Mis propiedades",
-    propiedades: propiedades,
-    csrfToken: req.csrfToken(),
-  });
+  const { pagina: paginaActual } = req.query;
+
+  const expresion = /^[1-9]$/;
+  if (!expresion.test(paginaActual)) {
+    return res.redirect("/mis-propiedades?pagina=1");
+  }
+
+  try {
+    const { id } = req.usuario;
+
+//Limites y Offset para el paginador
+const limit=5
+const offset=((paginaActual*limit)-limit)
+
+
+    const [propiedades, total] = await Promise.all([
+       Propiedad.findAll({
+        limit,
+        offset,
+        where: {
+          usuarioId: id,
+        },
+        include: [
+          { model: Categoria, as: "categoria" },
+          { model: Precio, as: "precio" },
+        ],
+      }),
+      Propiedad.count({
+        where:{
+          usuarioId:id
+        }
+      })
+    ])
+
+
+
+    res.render("propiedades/admin", {
+      pagina: "Mis propiedades",
+      propiedades: propiedades,
+      csrfToken: req.csrfToken(),
+      paginas: Math.ceil(total/limit),
+      paginaActual: Number(paginaActual),
+      limit,
+      offset,
+      total
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 //Formulario para crear Nueva tarea
@@ -272,7 +307,7 @@ const eliminar = async (req, res) => {
   if (propiedad.usuarioId.toString() !== req.usuario.id.toString()) {
     return res.redirect("/mis-propiedades");
   }
-  
+
   // Eliminar imagen
   await unlink(`public/uploads/${propiedad.imagen}`);
   console.log(`Se elimino la imagen: ${propiedad.imagen}`);
@@ -284,12 +319,29 @@ const eliminar = async (req, res) => {
 
 //Muestra una propiedad
 
-const mostrarPropiedad=async(req, res)=>{
-  res.render('propiedades/mostrar',{
-    
-  })
+const mostrarPropiedad = async (req, res) => {
+  const { id } = req.params;
 
-}
+  //comprobar que la propiedad exista
+  const propiedad = await Propiedad.findByPk(id, {
+    include: [
+      {
+        model: Precio,
+        as: "precio",
+      },
+      { model: Categoria, as: "categoria" },
+    ],
+  });
+
+  if (!propiedad) {
+    return res.redirect("/404");
+  }
+
+  res.render("propiedades/mostrar", {
+    propiedad,
+    pagina: propiedad.titulo,
+  });
+};
 
 export {
   admin,
@@ -300,5 +352,5 @@ export {
   editar,
   guardarCambios,
   eliminar,
-  mostrarPropiedad
+  mostrarPropiedad,
 };
