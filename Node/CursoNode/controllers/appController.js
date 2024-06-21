@@ -1,5 +1,5 @@
     import { Sequelize } from "sequelize";
-    import { Precio, Categoria, Propiedad } from "../models/index.js";
+    import { Precio, Categoria, Propiedad, Usuario } from "../models/index.js";
 
     const inicio = async (req, res) => {
     const [categorias, precios, casas, departamentos] = await Promise.all([
@@ -40,6 +40,7 @@
         casas,
         departamentos,
         csrfToken: req.csrfToken(),
+        usuario: req.usuario,
     });
     };
 
@@ -62,10 +63,11 @@
 
     res.render("categoria", {
         pagina: `
-            ${categoria.nombre} en Venta
-            `,
+                ${categoria.nombre} en Venta
+                `,
         propiedades,
         csrfToken: req.csrfToken(),
+        usuario: req.usuario,
     });
     };
 

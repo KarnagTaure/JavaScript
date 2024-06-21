@@ -1,7 +1,13 @@
 import { unlink } from "node:fs/promises";
 import { validationResult } from "express-validator";
-import { Precio, Categoria, Propiedad } from "../models/index.js";
-import { Router } from "express";
+import {
+  Precio,
+  Categoria,
+  Propiedad,
+  Mensaje,
+  Usuario,
+} from "../models/index.js";
+import { esVendedor, formatearFecha } from "../helpers/index.js";
 
 const admin = async (req, res) => {
   //leer QueryString
@@ -16,13 +22,12 @@ const admin = async (req, res) => {
   try {
     const { id } = req.usuario;
 
-//Limites y Offset para el paginador
-const limit=5
-const offset=((paginaActual*limit)-limit)
-
+    //Limites y Offset para el paginador
+    const limit = 10;
+    const offset = paginaActual * limit - limit;
 
     const [propiedades, total] = await Promise.all([
-       Propiedad.findAll({
+      Propiedad.findAll({
         limit,
         offset,
         where: {
@@ -31,26 +36,26 @@ const offset=((paginaActual*limit)-limit)
         include: [
           { model: Categoria, as: "categoria" },
           { model: Precio, as: "precio" },
+          { model: Mensaje, as: "mensajes" },
         ],
       }),
       Propiedad.count({
-        where:{
-          usuarioId:id
-        }
-      })
-    ])
-
-
+        where: {
+          usuarioId: id,
+        },
+      }),
+    ]);
 
     res.render("propiedades/admin", {
       pagina: "Mis propiedades",
       propiedades: propiedades,
       csrfToken: req.csrfToken(),
-      paginas: Math.ceil(total/limit),
+      paginas: Math.ceil(total / limit),
       paginaActual: Number(paginaActual),
       limit,
       offset,
-      total
+      total,
+      usuario: req.usuario,
     });
   } catch (error) {
     console.log(error);
@@ -317,6 +322,35 @@ const eliminar = async (req, res) => {
   res.redirect("/mis-propiedades");
 };
 
+// Modifica el estado de una propiedad
+const cambiarEstado= async (req,res)=>{
+  const { id } = req.params;
+
+  // Validar que exista
+  const propiedad = await Propiedad.findByPk(id);
+
+  if (!propiedad) {
+    return res.redirect("/mis-propiedades");
+  }
+  // REvisar quien visita es quien la creo
+  if (propiedad.usuarioId.toString() !== req.usuario.id.toString()) {
+    return res.redirect("/mis-propiedades");
+  }
+
+  //Actualizar 
+
+ propiedad.publicado = !propiedad.publicado
+
+ await propiedad.save()
+
+ res.json({
+  resultado: 'ok'
+ })
+
+}
+
+
+
 //Muestra una propiedad
 
 const mostrarPropiedad = async (req, res) => {
@@ -333,14 +367,93 @@ const mostrarPropiedad = async (req, res) => {
     ],
   });
 
-  if (!propiedad) {
+  if (!propiedad || !propiedad.publicado) {
     return res.redirect("/404");
   }
 
   res.render("propiedades/mostrar", {
     propiedad,
     pagina: propiedad.titulo,
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken(),
+    usuario: req.usuario,
+    esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+  });
+};
+const enviarMensaje = async (req, res) => {
+  const { id } = req.params;
+
+  //comprobar que la propiedad exista
+  const propiedad = await Propiedad.findByPk(id, {
+    include: [
+      {
+        model: Precio,
+        as: "precio",
+      },
+      { model: Categoria, as: "categoria" },
+    ],
+  });
+
+  if (!propiedad) {
+    return res.redirect("/404");
+  }
+  // Renderizr los codigos
+
+  // Validacion
+  let resultado = validationResult(req);
+
+  if (!resultado.isEmpty()) {
+    return res.render("propiedades/mostrar", {
+      propiedad,
+      pagina: propiedad.titulo,
+      csrfToken: req.csrfToken(),
+      usuario: req.usuario,
+      esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+      errores: resultado.array(),
+    });
+  }
+
+  const { mensaje } = req.body;
+  const { id: propiedadId } = req.params;
+  const { id: usuarioId } = req.usuario;
+  // ALmacenar el mensaje
+  await Mensaje.create({
+    mensaje,
+    propiedadId,
+    usuarioId,
+  });
+
+  res.redirect("/");
+};
+
+//Leer mensaje recibidos
+const verMensajes = async (req, res) => {
+  const { id } = req.params;
+
+  // Validar que exista
+  const propiedad = await Propiedad.findByPk(id, {
+    include: [
+      {
+        model: Mensaje,
+        as: "mensajes",
+        include: [
+          //scppe filtra los datos que no quiero mostrar
+          { model: Usuario.scope("eliminarPassword"), as: "usuario" },
+        ],
+      },
+    ],
+  });
+
+  if (!propiedad) {
+    return res.redirect("/mis-propiedades");
+  }
+  // REvisar quien visita es quien la creo
+  if (propiedad.usuarioId.toString() !== req.usuario.id.toString()) {
+    return res.redirect("/mis-propiedades");
+  }
+  res.render("propiedades/mensajes", {
+    pagina: "Mensajes",
+    mensajes: propiedad.mensajes,
+    formatearFecha,
   });
 };
 
@@ -353,5 +466,8 @@ export {
   editar,
   guardarCambios,
   eliminar,
+  cambiarEstado,
   mostrarPropiedad,
+  enviarMensaje,
+  verMensajes,
 };

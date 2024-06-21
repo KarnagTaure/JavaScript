@@ -35,13 +35,15 @@ block contenido
             h2(class="text-center text-4xl font-extrabold pt-10") Casas en Venta 
             div(class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5")
                 each propiedad in casas  
-                    include ./templates/card
+                    if propiedad.publicado 
+                        include ./templates/card
 
         section(class="py-5")
             h2(class="text-center text-4xl font-extrabold pt-10") Departamentos en Venta 
             div(class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5")
-                each propiedad in departamentos  
-                    include ./templates/card
+                each propiedad in departamentos 
+                    if propiedad.publicado 
+                        include ./templates/card
 
         
 block scripts 
